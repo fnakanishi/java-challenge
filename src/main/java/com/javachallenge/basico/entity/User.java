@@ -2,13 +2,21 @@ package com.javachallenge.basico.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
-@Table(name = "tb_user")
+@Table(name = "TB_USER")
 public class User implements Serializable {
+
+    public enum Role {
+        ADMIN,
+        USER
+    }
+
     private Long id;
     private String username;
     private String password;
+    private Set<Role> roles;
 
     public User() {}
 
@@ -18,7 +26,7 @@ public class User implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -43,5 +51,17 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @ElementCollection(targetClass = Role.class)
+    @CollectionTable(name = "TB_USER_ROLE", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role_name")
+    @Enumerated(EnumType.STRING)
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }
