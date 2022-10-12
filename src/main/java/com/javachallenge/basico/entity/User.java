@@ -2,6 +2,7 @@ package com.javachallenge.basico.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Set;
 
 @Entity
@@ -63,5 +64,13 @@ public class User implements Serializable {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public void addRole(Role role) {
+        if (roles == null) {
+            roles = Collections.singleton(role);
+        } else {
+            roles.add(role);
+        }
     }
 }
