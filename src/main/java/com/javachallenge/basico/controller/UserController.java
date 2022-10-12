@@ -1,32 +1,28 @@
 package com.javachallenge.basico.controller;
 
 import com.javachallenge.basico.entity.User;
-import com.javachallenge.basico.repository.UserRepository;
+import com.javachallenge.basico.security.request.UserRequest;
+import com.javachallenge.basico.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.security.RolesAllowed;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired private UserRepository repository;
+    @Autowired private UserService userService;
 
-    @GetMapping("/")
-    public ResponseEntity all() {
-        List<User> users = repository.findAll();
-        return ResponseEntity.ok().body(users);
-    }
-
-    @PostMapping("registration")
-    @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody User user) {
-        user.setRoles(Collections.singleton(User.Role.USER));
-        repository.save(user);
-        return user;
+    @PutMapping("/upgrade-permissions")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity upgradePermissions(@RequestBody UserRequest request) {
+        User user = userService.findByUsername(request.getUsername());
+        user.addRole(User.Role.ROLE_ADMIN);
+        userService.save(user);
+        return ResponseEntity.noContent().build();
     }
 }
