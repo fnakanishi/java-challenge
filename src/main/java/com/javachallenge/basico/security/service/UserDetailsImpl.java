@@ -6,19 +6,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.javachallenge.basico.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
-
-    @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
     private Long id;
 
     private String username;
@@ -41,11 +37,7 @@ public class UserDetailsImpl implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toList());
 
-        return new UserDetailsImpl(
-                user.getId(),
-                user.getUsername(),
-                user.getPassword(),
-                authorities);
+        return new UserDetailsImpl(user.getId(), user.getUsername(), user.getPassword(), authorities);
     }
 
     @Override

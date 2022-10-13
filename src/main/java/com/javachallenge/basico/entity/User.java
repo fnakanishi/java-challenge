@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.Set;
 
 @Entity
-@Table(name = "TB_USER")
+@Table(name = "TB_USER", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
 public class User implements Serializable {
 
     public enum Role {
-        ADMIN,
-        USER
+        ROLE_ADMIN,
+        ROLE_USER
     }
 
     private Long id;
@@ -24,6 +24,7 @@ public class User implements Serializable {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+        this.roles = Collections.singleton(Role.ROLE_USER);
     }
 
     @Id
