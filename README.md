@@ -34,13 +34,13 @@ This is a simple project with a challenge for Backend developrs.
 
 - [X] Create the database using [H2](https://www.h2database.com/html/main.html). You should include the user table, the user can have multiple roles.
 - [X] Create an endpoint to create a user. (The user should have a username and a password, be careful when saving the user password, and the roles)
-- [ ] Create an endpoint to update the permission to this user to ADMIN and/or USER role. This API could be called just by the ADMIN user, see @Secured and Roles in Spring Security.
+- [X] Create an endpoint to update the permission to this user to ADMIN and/or USER role. This API could be called just by the ADMIN user, see @Secured and Roles in Spring Security.
 
 #### Create the authentication for your API
 
-- [ ] Create the authentication using JWT
-- [ ] Create two roles ADMIN, USER
-- [ ] Create an endpoint to return the JWT (5 minutes of timeout), receive the username and password
+- [X] Create the authentication using JWT
+- [X] Create two roles ADMIN, USER
+- [X] Create an endpoint to return the JWT (5 minutes of timeout), receive the username and password
 
 * Book: REST API - Design Rulebook : Mark Masse: https://www.oreilly.com/library/view/rest-api-design/9781449317904/
 * Spring Data: https://www.baeldung.com/the-persistence-layer-with-spring-data-jpa
