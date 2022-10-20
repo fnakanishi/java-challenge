@@ -64,7 +64,7 @@ public class Movie {
         this.originalTitle = originalTitle;
     }
 
-    @Column(name = "FULL_TITLE", nullable = false)
+    @Column(name = "FULL_TITLE")
     public String getFullTitle() {
         return fullTitle;
     }
@@ -73,7 +73,7 @@ public class Movie {
         this.fullTitle = fullTitle;
     }
 
-    @Column(nullable = false)
+    @Column(name = "LAUNCH_YEAR", nullable = false)
     public int getYear() {
         return year;
     }
@@ -82,7 +82,7 @@ public class Movie {
         this.year = year;
     }
 
-    @Column(nullable = false)
+    @Column(name = "IMAGE_URL")
     public String getImage() {
         return image;
     }
@@ -100,7 +100,7 @@ public class Movie {
         this.releaseDate = releaseDate;
     }
 
-    @Column(name = "RUN_TIME", nullable = false)
+    @Column()
     public String getRuntime() {
         return runtime;
     }
@@ -109,7 +109,7 @@ public class Movie {
         this.runtime = runtime;
     }
 
-    @Column(nullable = false)
+    @Column()
     public String getPlot() {
         return plot;
     }
@@ -118,7 +118,7 @@ public class Movie {
         this.plot = plot;
     }
 
-    @Column(nullable = false)
+    @Column()
     public String getAwards() {
         return awards;
     }
@@ -127,7 +127,7 @@ public class Movie {
         this.awards = awards;
     }
 
-    @Column(nullable = false)
+    @Column()
     public String getDirectors() {
         return directors;
     }
@@ -136,7 +136,7 @@ public class Movie {
         this.directors = directors;
     }
 
-    @Column(nullable = false)
+    @Column()
     public String getWriters() {
         return writers;
     }
@@ -145,7 +145,7 @@ public class Movie {
         this.writers = writers;
     }
 
-    @Column(nullable = false)
+    @Column()
     public String getStars() {
         return stars;
     }
@@ -154,7 +154,7 @@ public class Movie {
         this.stars = stars;
     }
 
-    @Column(nullable = false)
+    @Column()
     public String getGenres() {
         return genres;
     }
@@ -163,7 +163,7 @@ public class Movie {
         this.genres = genres;
     }
 
-    @Column(nullable = false)
+    @Column()
     public String getLanguages() {
         return languages;
     }
@@ -172,7 +172,7 @@ public class Movie {
         this.languages = languages;
     }
 
-    @Column(name = "CONTENT_RATING", nullable = false)
+    @Column(name = "CONTENT_RATING")
     public String getContentRating() {
         return contentRating;
     }

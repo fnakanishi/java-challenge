@@ -18,7 +18,7 @@ public interface MovieClient {
     }
 
     @RequestLine("GET /Title/{apiKey}/{imdbId}")
-    MovieDTO findById(@Param String apiKey, @Param String imdbId);
+    MovieDTO findByImdbId(@Param String apiKey, @Param String imdbId);
 
     @RequestLine("GET /Top250Movies/{apiKey}")
     MovieListResource findAll(@Param String apiKey);

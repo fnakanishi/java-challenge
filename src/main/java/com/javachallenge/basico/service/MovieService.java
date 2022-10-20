@@ -5,6 +5,7 @@ import com.javachallenge.basico.client.resources.MovieListResource;
 import com.javachallenge.basico.client.resources.dto.MovieDTO;
 import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.repository.MovieRepository;
+import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import static com.javachallenge.basico.client.MovieClient.buildMovieClient;
 
 @Service
 public class MovieService {
+
+    @Autowired private UserService userService;
     @Autowired private MovieRepository repository;
 
     private MovieClient movieClient = buildMovieClient();
@@ -45,7 +48,7 @@ public class MovieService {
     private void create(String imdbId) {
         Movie movie = repository.findMovieByImdbId(imdbId);
         if (movie == null) {
-            movie = findById(imdbId);
+            movie = findByImdbId(imdbId);
             repository.save(movie);
         }
     }
@@ -58,12 +61,12 @@ public class MovieService {
         return repository.findAll(sort);
     }
 
-    public Movie findByIdOrImdbId(String id) {
-        return repository.findMovieByIdOrImdbId(id);
+    public Movie findById(Long id) {
+        return repository.findById(id).get();
     }
 
-    public Movie findById(String imdbId) {
-        MovieDTO dto = movieClient.findById(IMDB_API_KEY, imdbId);
+    public Movie findByImdbId(String imdbId) {
+        MovieDTO dto = movieClient.findByImdbId(IMDB_API_KEY, imdbId);
         Movie movie = build(dto);
 
         return movie;
@@ -75,6 +78,22 @@ public class MovieService {
         for (MovieDTO dto: list) {
             String imdbId = dto.getId();
             create(imdbId);
+        }
+    }
+
+    public void addFavorite(UserDetailsImpl user, Long id) {
+        Movie movie = findById(id);
+        if (movie != null) {
+            userService.addFavorite(user, movie);
+            repository.save(movie);
+        }
+    }
+
+    public void removeFavorite(UserDetailsImpl user, Long id) {
+        Movie movie = findById(id);
+        if (movie != null) {
+            userService.removeFavorite(user, movie);
+            repository.save(movie);
         }
     }
 }
