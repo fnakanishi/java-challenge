@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {
@@ -23,5 +22,10 @@ public class MovieController {
     public ResponseEntity findTop250() {
         movieService.saveTopMovies();
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+    @GetMapping("/list-all")
+    public ResponseEntity findAll() {
+        List<Movie> movies = movieService.findAll();
+        return ResponseEntity.ok().body(movies);
     }
 }
