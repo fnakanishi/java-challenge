@@ -7,8 +7,29 @@ CREATE TABLE IF NOT EXISTS tb_user (
 
 CREATE TABLE IF NOT EXISTS tb_user_role (
     `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
-    `user_id` INTEGER,
+    `user_id` INTEGER NOT NULL,
     `role_name` VARCHAR(20),
     CONSTRAINT `user_role_fk` FOREIGN KEY (`user_id`) REFERENCES tb_user (`id`),
     CONSTRAINT `user_role_uk` UNIQUE (`user_id`, `role_name`)
+);
+
+CREATE TABLE IF NOT EXISTS tb_movie (
+    `id` INTEGER PRIMARY KEY AUTO_INCREMENT,
+    `imdb_id` VARCHAR(100) NOT NULL,
+	`title` VARCHAR(100)NOT NULL,
+	`original_title` VARCHAR(100) NOT NULL,
+	`full_title` VARCHAR(100),
+	`year` VARCHAR(100) NOT NULL,
+	`image` VARCHAR(100),
+	`release_date` DATE NOT NULL,
+	`runtime` VARCHAR(10),
+	`plot` VARCHAR(1000),
+	`awards` VARCHAR(100),
+	`directors` VARCHAR(100),
+	`writers` VARCHAR(100),
+	`stars` VARCHAR(100),
+	`genres` VARCHAR(100),
+	`languages` VARCHAR(100),
+	`content_rating` VARCHAR(10),
+	CONSTRAINT movie_uk UNIQUE (`imdb_id`)
 );
