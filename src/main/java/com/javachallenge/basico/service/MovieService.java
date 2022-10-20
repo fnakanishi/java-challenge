@@ -50,8 +50,16 @@ public class MovieService {
         }
     }
 
+    public List<Movie> findAll() {
+        return repository.findAll();
+    }
+
     public List<Movie> findAll(Sort sort) {
-        return sort == null ? repository.findAll() : repository.findAll(sort);
+        return repository.findAll(sort);
+    }
+
+    public Movie findByIdOrImdbId(String id) {
+        return repository.findMovieByIdOrImdbId(id);
     }
 
     public Movie findById(String imdbId) {

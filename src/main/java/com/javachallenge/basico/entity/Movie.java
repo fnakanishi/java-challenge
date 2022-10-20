@@ -2,7 +2,7 @@ package com.javachallenge.basico.entity;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "TB_MOVIE", uniqueConstraints = @UniqueConstraint(columnNames = "IMDB_ID"))
@@ -25,7 +25,7 @@ public class Movie {
     private String languages;
     private String contentRating;
 
-    private List<User> favoritees;
+    private Set<User> usersFavorited;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -179,5 +179,14 @@ public class Movie {
 
     public void setContentRating(String contentRating) {
         this.contentRating = contentRating;
+    }
+
+    @ManyToMany(mappedBy = "favorites")
+    public Set<User> getUsersFavorited() {
+        return usersFavorited;
+    }
+
+    public void setUsersFavorited(Set<User> usersFavorited) {
+        this.usersFavorited = usersFavorited;
     }
 }

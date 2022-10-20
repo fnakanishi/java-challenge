@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     Movie findMovieByImdbId(String imdbId);
+
+    Movie findMovieByIdOrImdbId(String id);
 }

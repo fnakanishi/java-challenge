@@ -18,6 +18,7 @@ public class User implements Serializable {
     private String username;
     private String password;
     private Set<Role> roles;
+    private Set<Movie> favorites;
 
     public User() {}
 
@@ -72,6 +73,24 @@ public class User implements Serializable {
             roles = Collections.singleton(role);
         } else {
             roles.add(role);
+        }
+    }
+
+    @ManyToMany
+    @JoinTable(name = "TB_FAVORITE", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
+    public Set<Movie> getFavorites() {
+        return favorites;
+    }
+
+    public void setFavorites(Set<Movie> favorites) {
+        this.favorites = favorites;
+    }
+
+    public void addFavorite(Movie movie) {
+        if (favorites == null) {
+            favorites = Collections.singleton(movie);
+        } else {
+            favorites.add(movie);
         }
     }
 }

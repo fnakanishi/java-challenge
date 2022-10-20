@@ -1,5 +1,6 @@
 package com.javachallenge.basico.service;
 
+import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,10 @@ public class UserService {
 
     public Boolean existsByUsername(String username) {
         return repository.existsByUsername(username);
+    }
+
+    public void addFavorite(User user, Movie movie) {
+        user.addFavorite(movie);
+        repository.save(user);
     }
 }
