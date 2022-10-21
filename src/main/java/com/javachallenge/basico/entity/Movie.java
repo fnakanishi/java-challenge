@@ -1,11 +1,14 @@
 package com.javachallenge.basico.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
 @Entity
 @Table(name = "TB_MOVIE", uniqueConstraints = @UniqueConstraint(columnNames = "IMDB_ID"))
+@JsonIgnoreProperties("usersFavorited")
 public class Movie {
     private Long id;
     private String imdbId;
@@ -24,7 +27,7 @@ public class Movie {
     private String genres;
     private String languages;
     private String contentRating;
-
+    private int favorited;
     private Set<User> usersFavorited;
 
     @Id
@@ -179,6 +182,19 @@ public class Movie {
 
     public void setContentRating(String contentRating) {
         this.contentRating = contentRating;
+    }
+
+    @Column(nullable = false)
+    public int getFavorited() {
+        return favorited;
+    }
+
+    public void setFavorited(int favorited) {
+        this.favorited = favorited;
+    }
+
+    public void editFavorites(int i) {
+        this.favorited = this.favorited + i;
     }
 
     @ManyToMany(mappedBy = "favorites")

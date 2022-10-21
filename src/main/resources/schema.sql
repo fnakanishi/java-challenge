@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS tb_movie (
 	`genres` VARCHAR(100),
 	`languages` VARCHAR(100),
 	`content_rating` VARCHAR(10),
+	`favorited` INTEGER DEFAULT 0,
 	CONSTRAINT movie_uk UNIQUE (`imdb_id`)
 );
 

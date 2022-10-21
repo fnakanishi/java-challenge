@@ -7,6 +7,7 @@ import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.repository.MovieRepository;
 import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -81,10 +82,16 @@ public class MovieService {
         }
     }
 
+    public List<Movie> findTop10ByFavorited() {
+        return repository.findTop10ByOrderByFavoritedDesc();
+//        return repository.findTopByFavorited(Pageable.ofSize(10));
+    }
+
     public void addFavorite(UserDetailsImpl user, Long id) {
         Movie movie = findById(id);
         if (movie != null) {
             userService.addFavorite(user, movie);
+            movie.editFavorites(1);
             repository.save(movie);
         }
     }
@@ -93,6 +100,7 @@ public class MovieService {
         Movie movie = findById(id);
         if (movie != null) {
             userService.removeFavorite(user, movie);
+            movie.editFavorites(-1);
             repository.save(movie);
         }
     }
