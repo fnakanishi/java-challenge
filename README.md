@@ -62,7 +62,7 @@ This is a simple project with a challenge for Backend developrs.
 - [X] Each time the user includes the movie in the favorite list add one "star" to the movie
 - [X] Create an endpoint to list the top 10 movies, the movies with more stars.
 - [X] Create an endpoint to list the favorite movies per user.
-- [ ] Don't forget to include Swagger/OpenAPI, and the test.
+- [X] Don't forget to include Swagger/OpenAPI, and the test.
 
 #### Content to help:
 
