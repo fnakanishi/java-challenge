@@ -7,7 +7,6 @@ import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.repository.MovieRepository;
 import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
