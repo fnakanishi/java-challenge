@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -61,6 +62,7 @@ public class MovieService {
         return repository.findByOrderByFavoritedDesc(Pageable.ofSize(amount));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void addFavorite(UserDetailsImpl userImpl, String id) {
         Movie movie = findById(id);
         if (movie != null) {
@@ -71,6 +73,7 @@ public class MovieService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void removeFavorite(UserDetailsImpl userImpl, String id) {
         Movie movie = findById(id);
         if (movie != null) {
