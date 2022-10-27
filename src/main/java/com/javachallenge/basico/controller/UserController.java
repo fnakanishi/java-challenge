@@ -4,11 +4,13 @@ import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.controller.response.UserMovieResponse;
 import com.javachallenge.basico.security.request.UserRequest;
+import com.javachallenge.basico.security.service.UserDetailsImpl;
 import com.javachallenge.basico.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,14 +33,13 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/favorites/{username}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Set<Movie>> findFavorites(@PathVariable String username) {
-        Set<Movie> movies = userService.findMoviesByUsername(username);
+    @GetMapping("/favorites")
+    public ResponseEntity<Set<Movie>> findFavorites(@AuthenticationPrincipal UserDetailsImpl user) {
+        Set<Movie> movies = userService.findMoviesByUsername(user);
         return ResponseEntity.ok().body(movies);
     }
 
-    @GetMapping("/favorites")
+    @GetMapping("/list-favorites")
     public ResponseEntity<List<UserMovieResponse>> findFavorites() {
         List<UserMovieResponse> movies = userService.findFavoritedByUsers();
         return ResponseEntity.ok().body(movies);

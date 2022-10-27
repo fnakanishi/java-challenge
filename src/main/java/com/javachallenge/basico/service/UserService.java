@@ -45,6 +45,11 @@ public class UserService {
         repository.save(user);
     }
 
+    public Set<Movie> findMoviesByUsername(UserDetailsImpl userImpl) {
+        String username = userImpl.getUsername();
+        return findMoviesByUsername(username);
+    }
+
     public Set<Movie> findMoviesByUsername(String username) {
         User user = repository.findByUsername(username);
         return user.getFavorites();
