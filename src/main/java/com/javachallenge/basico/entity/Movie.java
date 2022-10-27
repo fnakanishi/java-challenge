@@ -182,7 +182,7 @@ public class Movie {
         this.favorited = favorited;
     }
 
-    @ManyToMany(mappedBy = "favorites")
+    @ManyToMany(mappedBy = "favorites", fetch = FetchType.LAZY)
     public Set<User> getUsersFavorited() {
         return usersFavorited;
     }

@@ -76,7 +76,7 @@ public class User implements Serializable {
         }
     }
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "TB_FAVORITE", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "movie_id"))
     public Set<Movie> getFavorites() {
         return favorites;
