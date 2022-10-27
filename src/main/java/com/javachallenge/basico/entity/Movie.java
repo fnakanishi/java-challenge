@@ -7,11 +7,10 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Table(name = "TB_MOVIE", uniqueConstraints = @UniqueConstraint(columnNames = "IMDB_ID"))
+@Table(name = "TB_MOVIE")
 @JsonIgnoreProperties("usersFavorited")
 public class Movie {
-    private Long id;
-    private String imdbId;
+    private String id;
     private String title;
     private String originalTitle;
     private String fullTitle;
@@ -31,22 +30,12 @@ public class Movie {
     private Set<User> usersFavorited;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    @Column(name = "IMDB_ID", nullable = false)
-    public String getImdbId() {
-        return imdbId;
-    }
-
-    public void setImdbId(String imdbId) {
-        this.imdbId = imdbId;
     }
 
     @Column(nullable = false)

@@ -40,13 +40,13 @@ public class MovieController {
     }
 
     @PutMapping("/add-favorite/{id}")
-    public ResponseEntity addFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable Long id) {
+    public ResponseEntity addFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable String id) {
         movieService.addFavorite(user, id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/remove-favorite/{id}")
-    public ResponseEntity removeFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable Long id) {
+    public ResponseEntity removeFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable String id) {
         movieService.removeFavorite(user, id);
         return ResponseEntity.noContent().build();
     }

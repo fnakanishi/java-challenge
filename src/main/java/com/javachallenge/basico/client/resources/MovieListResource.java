@@ -1,6 +1,6 @@
 package com.javachallenge.basico.client.resources;
 
-import com.javachallenge.basico.client.resources.dto.MovieDTO;
+import com.javachallenge.basico.entity.Movie;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +13,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovieListResource {
-    private List<MovieDTO> items;
+    private List<Movie> items;
 }

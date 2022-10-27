@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MovieRepository extends JpaRepository<Movie, Long> {
-    Movie findMovieByImdbId(String imdbId);
+    Movie findMovieById(String id);
 
     List<Movie> findByOrderByFavoritedDesc(Pageable pageable);
 }

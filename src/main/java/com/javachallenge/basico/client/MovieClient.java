@@ -2,7 +2,6 @@ package com.javachallenge.basico.client;
 
 import com.javachallenge.basico.client.builder.MovieFeignClientBuilder;
 import com.javachallenge.basico.client.resources.MovieListResource;
-import com.javachallenge.basico.client.resources.dto.MovieDTO;
 import com.javachallenge.basico.entity.Movie;
 
 import feign.Headers;
@@ -18,7 +17,7 @@ public interface MovieClient {
     }
 
     @RequestLine("GET /Title/{apiKey}/{imdbId}")
-    MovieDTO findByImdbId(@Param String apiKey, @Param String imdbId);
+    Movie findByImdbId(@Param String apiKey, @Param String imdbId);
 
     @RequestLine("GET /Top250Movies/{apiKey}")
     MovieListResource findAll(@Param String apiKey);

@@ -14,8 +14,7 @@ CREATE TABLE IF NOT EXISTS tb_user_role (
 );
 
 CREATE TABLE IF NOT EXISTS tb_movie (
-	`id` INTEGER PRIMARY KEY AUTO_INCREMENT,
-	`imdb_id` VARCHAR(100) NOT NULL,
+	`id` VARCHAR(10) PRIMARY KEY,
 	`title` VARCHAR(100)NOT NULL,
 	`original_title` VARCHAR(100) NOT NULL,
 	`full_title` VARCHAR(200),
@@ -31,14 +30,13 @@ CREATE TABLE IF NOT EXISTS tb_movie (
 	`genres` VARCHAR(100),
 	`languages` VARCHAR(100),
 	`content_rating` VARCHAR(10),
-	`favorited` INTEGER DEFAULT 0,
-	CONSTRAINT movie_uk UNIQUE (`imdb_id`)
+	`favorited` INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS tb_favorite (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT,
 	`user_id` INTEGER NOT NULL,
-	`movie_id` INTEGER NOT NULL,
+	`movie_id` VARCHAR(10) NOT NULL,
 	CONSTRAINT `favorite_fk1` FOREIGN KEY (`user_id`) REFERENCES tb_user (`id`),
 	CONSTRAINT `favorite_fk2` FOREIGN KEY (`movie_id`) REFERENCES tb_movie (`id`),
 	CONSTRAINT `favorite_uk` UNIQUE (`user_id`, `movie_id`)
