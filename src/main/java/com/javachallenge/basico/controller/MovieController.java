@@ -45,7 +45,7 @@ public class MovieController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/remove-favorite/{id}")
+    @DeleteMapping("/remove-favorite/{id}")
     public ResponseEntity removeFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable Long id) {
         movieService.removeFavorite(user, id);
         return ResponseEntity.noContent().build();
