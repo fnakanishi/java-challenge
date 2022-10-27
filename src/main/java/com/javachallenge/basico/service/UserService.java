@@ -33,18 +33,6 @@ public class UserService {
         return repository.existsByUsername(username);
     }
 
-    public void addFavorite(UserDetailsImpl userImpl, Movie movie) {
-        User user = findByUsername(userImpl.getUsername());
-        user.addFavorite(movie);
-        repository.save(user);
-    }
-
-    public void removeFavorite(UserDetailsImpl userImpl, Movie movie) {
-        User user = findByUsername(userImpl.getUsername());
-        user.getFavorites().remove(movie);
-        repository.save(user);
-    }
-
     public Set<Movie> findMoviesByUsername(UserDetailsImpl userImpl) {
         String username = userImpl.getUsername();
         return findMoviesByUsername(username);

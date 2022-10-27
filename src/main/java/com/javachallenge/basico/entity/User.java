@@ -85,12 +85,4 @@ public class User implements Serializable {
     public void setFavorites(Set<Movie> favorites) {
         this.favorites = favorites;
     }
-
-    public void addFavorite(Movie movie) {
-        if (favorites == null) {
-            favorites = Collections.singleton(movie);
-        } else {
-            favorites.add(movie);
-        }
-    }
 }

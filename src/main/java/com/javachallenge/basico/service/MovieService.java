@@ -3,6 +3,7 @@ package com.javachallenge.basico.service;
 import com.javachallenge.basico.client.MovieClient;
 import com.javachallenge.basico.client.resources.MovieListResource;
 import com.javachallenge.basico.entity.Movie;
+import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.repository.MovieRepository;
 import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,20 +61,22 @@ public class MovieService {
         return repository.findByOrderByFavoritedDesc(Pageable.ofSize(amount));
     }
 
-    public void addFavorite(UserDetailsImpl user, String id) {
+    public void addFavorite(UserDetailsImpl userImpl, String id) {
         Movie movie = findById(id);
         if (movie != null) {
-            userService.addFavorite(user, movie);
-            movie.editFavorites(1);
+            User user = userService.findByUsername(userImpl.getUsername());
+            movie.getUsersFavorited().add(user);
+            movie.setFavorited(movie.getUsersFavorited().size());
             repository.save(movie);
         }
     }
 
-    public void removeFavorite(UserDetailsImpl user, String id) {
+    public void removeFavorite(UserDetailsImpl userImpl, String id) {
         Movie movie = findById(id);
         if (movie != null) {
-            userService.removeFavorite(user, movie);
-            movie.editFavorites(-1);
+            User user = userService.findByUsername(userImpl.getUsername());
+            movie.getUsersFavorited().remove(user);
+            movie.setFavorited(movie.getUsersFavorited().size());
             repository.save(movie);
         }
     }
