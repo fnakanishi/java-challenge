@@ -9,7 +9,5 @@ import java.util.List;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     Movie findMovieByImdbId(String imdbId);
 
-//    List<Movie> findTopByFavorited(Pageable pageable);
-    List<Movie> findTop10ByOrderByFavoritedDesc();
-
+    List<Movie> findByOrderByFavoritedDesc(Pageable pageable);
 }

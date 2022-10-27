@@ -33,9 +33,9 @@ public class MovieController {
         return ResponseEntity.ok().body(movies);
     }
 
-    @GetMapping("/list-top-10")
-    public ResponseEntity findTop10() {
-        List<Movie> movies = movieService.findTop10ByFavorited();
+    @GetMapping("/list-top/{amount}")
+    public ResponseEntity findTop10(@PathVariable int amount) {
+        List<Movie> movies = movieService.findTopByFavorited(amount);
         return ResponseEntity.ok().body(movies);
     }
 
