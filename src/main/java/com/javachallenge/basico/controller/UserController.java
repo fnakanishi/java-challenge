@@ -5,6 +5,7 @@ import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.controller.response.UserMovieResponse;
 import com.javachallenge.basico.security.request.UserRequest;
 import com.javachallenge.basico.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
+@SecurityRequirement(name = "Bearer Authentication")
 public class UserController {
 
     @Autowired private UserService userService;
