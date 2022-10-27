@@ -182,10 +182,6 @@ public class Movie {
         this.favorited = favorited;
     }
 
-    public void editFavorites(int i) {
-        this.favorited = this.favorited + i;
-    }
-
     @ManyToMany(mappedBy = "favorites")
     public Set<User> getUsersFavorited() {
         return usersFavorited;
