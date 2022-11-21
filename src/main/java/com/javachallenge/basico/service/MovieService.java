@@ -12,7 +12,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static com.javachallenge.basico.Constants.IMDB_API_KEY;
 import static com.javachallenge.basico.client.MovieClient.buildMovieClient;
@@ -60,6 +63,45 @@ public class MovieService {
 
     public List<Movie> findTopByFavorited(int amount) {
         return repository.findByOrderByFavoritedDesc(Pageable.ofSize(amount));
+    }
+
+    public Movie findRandomMovie(UserDetailsImpl user) {
+        String username = user.getUsername();
+        Set<Movie> userMovielist = userService.findMoviesByUsername(username);
+        Map<Long, Integer> map = new HashMap<>();
+        for (Movie m: userMovielist) {
+            Movie movie = repository.findMovieById(m.getId());
+            Set<User> usersFavorited = movie.getUsersFavorited();
+            for (User userFavorited: usersFavorited) {
+                Long userId = userFavorited.getId();
+                Integer amount = map.get(userId);
+                if (amount == null) {
+                    map.put(userId, 1);
+                } else {
+                    map.put(userId, ++amount);
+                }
+            }
+        }
+
+        Set<Movie> bestMatchList = null;
+        int highestMatch = 0;
+        for (Long userId: map.keySet()) {
+            User user1 = userService.findById(userId);
+            Integer amount = map.get(userId);
+            Set<Movie> userMatchList = user1.getFavorites();
+            System.out.println("User " + user1.getUsername() + " has " + amount + " match(es).");
+            if (highestMatch < amount && amount != userMatchList.size()) {
+                highestMatch = amount;
+                bestMatchList = userMatchList;
+            }
+        }
+
+        if (bestMatchList != null) {
+            bestMatchList.removeAll(userMovielist);
+            return bestMatchList.iterator().next();
+        }
+
+        return null;
     }
 
     @Transactional(rollbackFor = Exception.class)

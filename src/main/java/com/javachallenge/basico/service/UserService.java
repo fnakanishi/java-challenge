@@ -25,6 +25,10 @@ public class UserService {
         return repository.findAll();
     }
 
+    public User findById(Long userId) {
+        return repository.getReferenceById(userId);
+    }
+
     public User findByUsername(String username) {
         return repository.findByUsername(username);
     }

@@ -39,6 +39,12 @@ public class MovieController {
         return ResponseEntity.ok().body(movies);
     }
 
+    @GetMapping("/suggestion")
+    public ResponseEntity findRandomMovie(@AuthenticationPrincipal UserDetailsImpl user) {
+        Movie movie = movieService.findRandomMovie(user);
+        return ResponseEntity.ok().body(movie);
+    }
+
     @PutMapping("/add-favorite/{id}")
     public ResponseEntity addFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable String id) {
         movieService.addFavorite(user, id);
