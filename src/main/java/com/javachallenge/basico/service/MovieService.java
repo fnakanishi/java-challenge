@@ -40,10 +40,6 @@ public class MovieService {
         return repository.findAll();
     }
 
-    public List<Movie> findAll(Sort sort) {
-        return repository.findAll(sort);
-    }
-
     public Movie findById(String id) {
         return repository.findMovieById(id);
     }

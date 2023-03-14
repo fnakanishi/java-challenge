@@ -21,10 +21,6 @@ public class UserService {
         return repository.save(user);
     }
 
-    public List<User> findAll() {
-        return repository.findAll();
-    }
-
     public User findById(Long userId) {
         return repository.getReferenceById(userId);
     }
@@ -37,13 +33,13 @@ public class UserService {
         return repository.existsByUsername(username);
     }
 
-    public Set<Movie> findMoviesByUsername(UserDetailsImpl userImpl) {
+    public Set<Movie> findMoviesByUser(UserDetailsImpl userImpl) {
         String username = userImpl.getUsername();
         return findMoviesByUsername(username);
     }
 
     public Set<Movie> findMoviesByUsername(String username) {
-        User user = repository.findByUsername(username);
+        User user = findByUsername(username);
         return user.getFavorites();
     }
 

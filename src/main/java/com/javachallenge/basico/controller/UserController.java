@@ -35,7 +35,7 @@ public class UserController {
 
     @GetMapping("/favorites")
     public ResponseEntity<Set<Movie>> findFavorites(@AuthenticationPrincipal UserDetailsImpl user) {
-        Set<Movie> movies = userService.findMoviesByUsername(user);
+        Set<Movie> movies = userService.findMoviesByUser(user);
         return ResponseEntity.ok().body(movies);
     }
 
