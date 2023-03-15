@@ -9,16 +9,20 @@ import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class MovieServiceTest {
 
     @InjectMocks
@@ -36,7 +40,10 @@ class MovieServiceTest {
 
     @BeforeEach
     void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        createMovie();
+    }
+
+    private void createMovie() throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         movieToReturnFromRepository = new Movie();
         movieToReturnFromRepository.setId("3");
@@ -64,7 +71,7 @@ class MovieServiceTest {
         movieListToReturn.add(new Movie());
         movieListToReturn.add(new Movie());
 
-        when(service.findAll()).thenReturn(movieListToReturn);
+        when(repository.findAll()).thenReturn(movieListToReturn);
 
         List<Movie> moviesList = service.findAll();
         Assertions.assertThat(moviesList).isNotEmpty();
@@ -75,7 +82,7 @@ class MovieServiceTest {
     void shouldReturnMovieWhenSearchingForImdbId() {
         when(movieClient.findByImdbId(anyString(), anyString())).thenReturn(movieToReturnFromRepository);
 
-        Movie movieResponse = movieClient.findByImdbId("", "3");
+        Movie movieResponse = service.findByImdbId("3");
         Assertions.assertThat(movieResponse).isEqualTo(movieToReturnFromRepository);
     }
 
@@ -83,7 +90,7 @@ class MovieServiceTest {
     void shouldReturnMovieWhenImdbIdDoesntExist() {
         when(movieClient.findByImdbId(anyString(), anyString())).thenReturn(null);
 
-        Movie movieResponse = movieClient.findByImdbId("", "3");
+        Movie movieResponse = service.findByImdbId("3");
         Assertions.assertThat(movieResponse).isNull();
     }
 
@@ -98,10 +105,11 @@ class MovieServiceTest {
         movieListToReturn.add(movieToReturnFromRepository);
 
         when(movieClient.findAll(anyString())).thenReturn(resource);
-        when(repository.findMovieById(anyString())).thenReturn(movieToReturnFromRepository);
-        when(repository.save(any(Movie.class))).thenReturn(movieToReturnFromRepository);
+        when(repository.findMovieById(anyString())).thenReturn(null);
+        when(movieClient.findByImdbId(anyString(), eq("3"))).thenReturn(movieToReturnFromRepository);
 
         service.saveTopMovies();
+        verify(repository, times(4)).save(any());
     }
 
     @Test
@@ -159,6 +167,5 @@ class MovieServiceTest {
         Movie movie = service.findRandomMovie(new UserDetailsImpl(1L, "testuser", "testpassword", null));
         Assertions.assertThat(movie).isNotNull();
         Assertions.assertThat(movie).isEqualTo(movieToReturnFromRepository);
-
     }
 }

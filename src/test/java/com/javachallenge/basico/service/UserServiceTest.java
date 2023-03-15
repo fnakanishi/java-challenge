@@ -8,9 +8,10 @@ import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
     @InjectMocks
@@ -29,14 +31,13 @@ class UserServiceTest {
     private User userToReturnFromRepository;
 
     @BeforeEach
-    void setup() throws Exception {
-        MockitoAnnotations.initMocks(this);
+    void setup() {
         userToReturnFromRepository = new User("testuser", "testpassword");
     }
 
     @Test
     void shouldSaveAndReturnSameObjectWhenSaving() {
-        when(service.save(any(User.class))).thenReturn(userToReturnFromRepository);
+        when(repository.save(eq(userToReturnFromRepository))).thenReturn(userToReturnFromRepository);
 
         User userResponse = service.save(userToReturnFromRepository);
         Assertions.assertThat(userResponse).isNotNull();
@@ -46,7 +47,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnSingleUserWhenUserIdExists() {
-        when(service.findById(anyLong())).thenReturn(userToReturnFromRepository);
+        when(repository.getReferenceById(1L)).thenReturn(userToReturnFromRepository);
 
         User userResponse = service.findById(1L);
         Assertions.assertThat(userResponse).isNotNull();
@@ -55,7 +56,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnNullWhenUserIdDoesntExistsOrNullId() {
-        when(service.findById(anyLong())).thenReturn(null);
+        when(repository.getReferenceById(anyLong())).thenReturn(null);
 
         User userResponse = service.findById(1L);
         Assertions.assertThat(userResponse).isNull();
@@ -65,7 +66,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnSingleUserWhenUsernNameExists() {
-        when(service.findByUsername(anyString())).thenReturn(userToReturnFromRepository);
+        when(repository.findByUsername(anyString())).thenReturn(userToReturnFromRepository);
 
         User userResponse = service.findByUsername("testuser");
         Assertions.assertThat(userResponse).isNotNull();
@@ -74,7 +75,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnNullWhenUsernameDoesntExistsOrNull() {
-        when(service.findByUsername(anyString())).thenReturn(null);
+        when(repository.findByUsername(anyString())).thenReturn(null);
 
         User userResponse = service.findByUsername("testuser");
         Assertions.assertThat(userResponse).isNull();
@@ -84,7 +85,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnTrueWhenUsernameExists() {
-        when(service.existsByUsername(anyString())).thenReturn(true);
+        when(repository.existsByUsername(anyString())).thenReturn(true);
 
         Boolean userNameExists = service.existsByUsername("testuser");
         Assertions.assertThat(userNameExists).isTrue();
@@ -92,7 +93,7 @@ class UserServiceTest {
 
     @Test
     void shouldReturnTrueWhenUsernameDoesntExistsOrIsNull() {
-        when(service.existsByUsername(anyString())).thenReturn(false);
+        when(repository.existsByUsername(anyString())).thenReturn(false);
 
         Boolean userNameExists = service.existsByUsername("testuser");
         Assertions.assertThat(userNameExists).isFalse();;
@@ -106,7 +107,7 @@ class UserServiceTest {
         Set<Movie> movies = new HashSet<>();
         movies.add(new Movie());
         userToReturnFromRepository.setFavorites(movies);
-        when(service.findByUsername(anyString())).thenReturn(userToReturnFromRepository);
+        when(repository.findByUsername(anyString())).thenReturn(userToReturnFromRepository);
 
         Set<Movie> moviesList = service.findMoviesByUser(userImpl);
         Assertions.assertThat(moviesList).isNotNull();
@@ -121,7 +122,6 @@ class UserServiceTest {
         usersList.add(userToReturnFromRepository);
         moviesList.add(new Movie());
 
-        userToReturnFromRepository.setFavorites(moviesList);
         when(repository.findAllByFavoritesIsNotNull()).thenReturn(usersList);
 
         List<UserMovieResponse> list = service.findFavoritedByUsers();
