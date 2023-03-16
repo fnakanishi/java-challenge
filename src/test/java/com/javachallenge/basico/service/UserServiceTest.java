@@ -117,10 +117,8 @@ class UserServiceTest {
     @Test
     void shouldReturnListOfAllUsersThatHaveFavoritedMovies() {
         Set<User> usersList = new HashSet<>();
-        Set<Movie> moviesList = new HashSet<>();
 
         usersList.add(userToReturnFromRepository);
-        moviesList.add(new Movie());
 
         when(repository.findAllByFavoritesIsNotNull()).thenReturn(usersList);
 
