@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -45,11 +46,8 @@ public class UserService {
 
     public List<UserMovieResponse> findFavoritedByUsers() {
         Set<User> userList = repository.findAllByFavoritesIsNotNull();
-        List<UserMovieResponse> list = new ArrayList<>();
-        for (User user: userList) {
-            UserMovieResponse dto = new UserMovieResponse(user);
-            list.add(dto);
-        }
-        return list;
+        return userList.stream()
+                .map(user -> new UserMovieResponse(user))
+                .collect(Collectors.toList());
     }
 }
