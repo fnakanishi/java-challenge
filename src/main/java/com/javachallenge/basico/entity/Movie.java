@@ -3,13 +3,14 @@ package com.javachallenge.basico.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
 @Entity
 @Table(name = "TB_MOVIE")
 @JsonIgnoreProperties("usersFavorited")
-public class Movie {
+public class Movie implements Serializable {
     private String id;
     private String title;
     private String originalTitle;
