@@ -7,8 +7,8 @@ import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.repository.MovieRepository;
 import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +57,7 @@ public class MovieService {
         }
     }
 
+    @Cacheable("topMovies")
     public List<Movie> findTopByFavorited(int amount) {
         return repository.findByOrderByFavoritedDesc(Pageable.ofSize(amount));
     }
