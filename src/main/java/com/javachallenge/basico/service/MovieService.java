@@ -8,14 +8,12 @@ import com.javachallenge.basico.repository.MovieRepository;
 import com.javachallenge.basico.security.service.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.javachallenge.basico.Constants.IMDB_API_KEY;
 import static com.javachallenge.basico.client.MovieClient.buildMovieClient;
@@ -58,7 +56,7 @@ public class MovieService {
     }
 
     @Cacheable("topMovies")
-    public List<Movie> findTopByFavorited(int amount) {
+    public Page<Movie> findTopByFavorited(int amount) {
         return repository.findByOrderByFavoritedDesc(Pageable.ofSize(amount));
     }
 
@@ -89,7 +87,7 @@ public class MovieService {
             System.out.println("User " + user1.getUsername() + " has " + amount + " match(es).");
             if (highestMatch < amount && amount != userMatchList.size()) {
                 highestMatch = amount;
-                bestMatchList = userMatchList;
+                bestMatchList = new HashSet<>(userMatchList);
             }
         }
 

@@ -13,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.*;
@@ -103,10 +105,11 @@ class MovieServiceTest {
         movieListToReturn.add(testMovie);
         movieListToReturn.add(testMovie);
 
-        when(repository.findByOrderByFavoritedDesc(Pageable.ofSize(4))).thenReturn(movieListToReturn);
-        List<Movie> moviesList = service.findTopByFavorited(4);
+        Page<Movie> pages = new PageImpl<>(movieListToReturn);
+        when(repository.findByOrderByFavoritedDesc(Pageable.ofSize(4))).thenReturn(pages);
+        Page<Movie> moviesList = service.findTopByFavorited(4);
         Assertions.assertThat(moviesList).isNotEmpty();
-        Assertions.assertThat(moviesList.size()).isEqualTo(4);
+        Assertions.assertThat(moviesList.getSize()).isEqualTo(4);
     }
 
     @Test

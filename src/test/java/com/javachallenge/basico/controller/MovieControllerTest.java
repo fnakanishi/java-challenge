@@ -17,6 +17,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -109,18 +111,20 @@ class MovieControllerTest {
     void shouldFindTopNFavoritedMovies() throws Exception {
         mockAuth();
 
+        Page<Movie> pages = new PageImpl<>(List.of(createMovie()));
+
         // Mocking DB call for favorited movie list
-        when(movieService.findTopByFavorited(anyInt())).thenReturn(List.of(createMovie()));
+        when(movieService.findTopByFavorited(anyInt())).thenReturn(pages);
 
         mvc.perform(MockMvcRequestBuilders
                         .get("/api/movies/list-top/3")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0]").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.is("The Godfather")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is("3")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].favorited", Matchers.is(3)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0]").exists())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].title", Matchers.is("The Godfather")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", Matchers.is("3")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].favorited", Matchers.is(3)));
     }
 
     @Test

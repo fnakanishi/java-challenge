@@ -5,6 +5,7 @@ import com.javachallenge.basico.security.service.UserDetailsImpl;
 import com.javachallenge.basico.service.MovieService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,7 +36,7 @@ public class MovieController {
 
     @GetMapping("/list-top/{amount}")
     public ResponseEntity findTop10(@PathVariable int amount) {
-        List<Movie> movies = movieService.findTopByFavorited(amount);
+        Page<Movie> movies = movieService.findTopByFavorited(amount);
         return ResponseEntity.ok().body(movies);
     }
 
