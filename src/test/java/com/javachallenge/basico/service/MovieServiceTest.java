@@ -110,6 +110,50 @@ class MovieServiceTest {
     }
 
     @Test
+    @DisplayName("Should return a recommended movie for the user who sent the request")
+    void shouldReturnRecommendedMovieWhenSimiliarTastingUserFound() {
+        Movie sharedFavoritedMovie = createUserFavoriteMovieList();
+        createMovie();
+        createUserWithSimilarFavoriteMovies(testMovie, sharedFavoritedMovie);
+
+        Movie movie = service.findRandomMovie(new UserDetailsImpl(1L, "testuser", "testpassword", null));
+
+        Assertions.assertThat(movie).isNotNull();
+        Assertions.assertThat(movie).isEqualTo(testMovie);
+    }
+
+    private void createUserWithSimilarFavoriteMovies(Movie... movies) {
+        Set<Long> similarTasteInMoviesUserIds = Set.of(2L, 3L);
+
+        User similarTasteInMoviesUser = new User();
+        similarTasteInMoviesUser.setId(2L);
+
+        Set<Movie> movieListToFavorite = Set.of(movies);
+        similarTasteInMoviesUser.setFavorites(movieListToFavorite);
+
+        when(repository.findUserIdsByFavoritedMovie(anyLong())).thenReturn(similarTasteInMoviesUserIds);
+        when(userService.findById(anyLong())).thenReturn(similarTasteInMoviesUser);
+    }
+
+    private Movie createUserFavoriteMovieList() {
+        Movie firstFavoriteMovie = new Movie();
+        firstFavoriteMovie.setId(1L);
+        Set<Movie> movieList = Set.of(firstFavoriteMovie);
+
+        when(userService.findMoviesByUserId(anyLong())).thenReturn(movieList);
+        return firstFavoriteMovie;
+    }
+
+    @Test
+    @DisplayName("Should return null when o a recommended movie for the user who sent the request")
+    void shouldReturnNullWhenNoSimiliarTastingUserFound() {
+        when(userService.findMoviesByUserId(anyLong())).thenReturn(new HashSet<>());
+
+        Movie movie = service.findRandomMovie(new UserDetailsImpl(1L, "testuser", "testpassword", null));
+        Assertions.assertThat(movie).isNull();
+    }
+
+    @Test
     void shouldReturnNullWhenBestMatchIsEmpty() {
         when(userService.findMoviesByUserId(anyLong())).thenReturn(new HashSet<>());
 
