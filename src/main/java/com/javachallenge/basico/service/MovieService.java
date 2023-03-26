@@ -54,10 +54,15 @@ public class MovieService {
         imdbIdsFromExternalAPI.stream().parallel().forEach(this::createWithImdb);
     }
 
+    @RateLimiter(name = "topMovies", fallbackMethod = "findTopFavoritedFromCache")
     public Page<Movie> findTopFavorited() {
         Page<Movie> movieList = repository.findByOrderByFavoritedDesc(Pageable.ofSize(10));
         retrieveMap().put("topMovies", movieList);
         return movieList;
+    }
+
+    public Page<Movie> findTopFavoritedFromCache(Exception e) {
+        return (Page<Movie>) retrieveMap().get("topMovies");
     }
 
     public Movie findRandomMovie(UserDetailsImpl user) {
@@ -88,10 +93,9 @@ public class MovieService {
         Set<Movie> bestMatchList = null;
         int highestMatch = 0;
         for (Long userId: map.keySet()) {
-            User user1 = userService.findById(userId);
+            User bestMatchingUser = userService.findById(userId);
             int amount = map.get(userId).get();
-            Set<Movie> userMatchList = user1.getFavorites();
-            System.out.println("User " + user1.getUsername() + " has " + amount + " match(es).");
+            Set<Movie> userMatchList = bestMatchingUser.getFavorites();
             if (highestMatch < amount && amount != userMatchList.size()) {
                 highestMatch = amount;
                 bestMatchList = new HashSet<>(userMatchList);
