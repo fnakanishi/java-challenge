@@ -1,7 +1,8 @@
 package com.javachallenge.basico.controller;
 
-import com.javachallenge.basico.client.MovieClient;
-import com.javachallenge.basico.client.resources.MovieListResource;
+import com.javachallenge.basico.client.imdb.IMDBMovieClient;
+import com.javachallenge.basico.client.imdb.resources.ImdbMovieDTO;
+import com.javachallenge.basico.client.imdb.resources.ImdbMovieList;
 import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.repository.MovieRepository;
@@ -61,7 +62,7 @@ class MovieControllerTest {
     private JwtUtils jwtUtils;
 
     @MockBean
-    private MovieClient movieClient;
+    private IMDBMovieClient movieClient;
 
     @BeforeEach
     public void setup() {
@@ -74,13 +75,13 @@ class MovieControllerTest {
     void shouldSaveMoviesToDB() throws Exception {
         mockAuth();
         // Creating movie resources object which will be returned from IMDB API call
-        Movie movie = createMovie();
-        MovieListResource resource = new MovieListResource(List.of(movie));
+        ImdbMovieDTO movie = createIMDBMovie();
+        ImdbMovieList resource = new ImdbMovieList(List.of(movie));
 
         // Mocking list of 250 Top Movies from IMDB
         when(movieClient.findAll(anyString())).thenReturn(resource);
         // Mocking DB search for movie ID (used when checking if a Movie already exists in DB before saving)
-        when(movieRepository.findMovieById(anyString())).thenReturn(null);
+        when(movieRepository.findMovieByImdbId(anyString())).thenReturn(null);
         // Mocking search for movie on IMDB for detailed info
         when(movieClient.findByImdbId(anyString(), eq("3"))).thenReturn(movie);
 
@@ -104,7 +105,7 @@ class MovieControllerTest {
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0]").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].title", Matchers.is("The Godfather")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is("3")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", Matchers.is(1)));
     }
 
     @Test
@@ -114,16 +115,16 @@ class MovieControllerTest {
         Page<Movie> pages = new PageImpl<>(List.of(createMovie()));
 
         // Mocking DB call for favorited movie list
-        when(movieService.findTopByFavorited(anyInt())).thenReturn(pages);
+        when(movieService.findTopFavorited()).thenReturn(pages);
 
         mvc.perform(MockMvcRequestBuilders
-                        .get("/api/movies/list-top/3")
+                        .get("/api/movies/list-top-10/")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0]").exists())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].title", Matchers.is("The Godfather")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", Matchers.is("3")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id", Matchers.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].favorited", Matchers.is(3)));
     }
 
@@ -140,7 +141,7 @@ class MovieControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is("The Godfather")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is("3")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)));
     }
 
     @Test
@@ -163,11 +164,17 @@ class MovieControllerTest {
                 .andExpect(status().isNoContent());
     }
 
-    private Movie createMovie() {
-        Movie movie =  new Movie();
-        movie.setId("3");
+    private ImdbMovieDTO createIMDBMovie() {
+        ImdbMovieDTO movie =  new ImdbMovieDTO();
+        movie.setId("tt0071562");
         movie.setTitle("The Godfather");
         movie.setFullTitle("The Godfather (1972)");
+        return movie;
+    }
+
+    private Movie createMovie() {
+        Movie movie = new Movie(createIMDBMovie());
+        movie.setId(1L);
         movie.setFavorited(3);
         return movie;
     }
