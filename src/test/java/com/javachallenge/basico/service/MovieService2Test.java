@@ -39,15 +39,15 @@ class MovieService2Test {
         addUserToMoviesFavorite(recommendedMovie, commonMovie, user);
         mockToCurrentUserContainsFavoriteMovie(commonMovie);
 
-        Movie movie = service.findRandomMovie(new UserDetailsImpl(1L, "testuser", "testpassword", null));
+        Movie movie = service.findRandomMovie2(new UserDetailsImpl(1L, "testuser", "testpassword", null));
         Assertions.assertThat(movie).isNotNull();
         Assertions.assertThat(movie).isEqualTo(recommendedMovie);
     }
 
     private void mockToCurrentUserContainsFavoriteMovie(Movie commonMovie) {
         Set<Movie> movieListToReturn = Set.of(commonMovie);
-        when(userService.findMoviesByUsername(anyString())).thenReturn(movieListToReturn);
-        when(repository.findMovieById(anyString())).thenReturn(commonMovie);
+        when(userService.findMoviesByUserId(anyLong())).thenReturn(movieListToReturn);
+        when(repository.findMovieByImdbId(anyString())).thenReturn(commonMovie);
     }
 
     private static void addUserToMoviesFavorite(Movie testMovie, Movie commonMovie, User user) {
@@ -62,14 +62,14 @@ class MovieService2Test {
     private static Movie createCommonMovie() {
         // Creating common movie to add to both users favorites
         Movie commonMovie = new Movie();
-        commonMovie.setId("1");
+        commonMovie.setImdbId("1");
         return commonMovie;
     }
 
     @NotNull
     private static Movie createRecommendedMovie() {
         Movie testMovie = new Movie();
-        testMovie.setId("3");
+        testMovie.setImdbId("3");
         testMovie.setTitle("The Godfather");
         testMovie.setFullTitle("The Godfather (1972)");
         return testMovie;
@@ -83,17 +83,5 @@ class MovieService2Test {
         user.setFavorites(movieListToFavorite);
         when(userService.findById(anyLong())).thenReturn(user);
         return user;
-    }
-
-    private class RandomMovieBuilder {
-        private User user;
-
-         public RandomMovieBuilder createUser() {
-             user = new User("testuser", "testpassword");
-             user.setId(1L);
-             return this;
-         }
-
-
     }
 }

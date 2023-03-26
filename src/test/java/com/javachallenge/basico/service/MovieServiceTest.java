@@ -1,7 +1,8 @@
 package com.javachallenge.basico.service;
 
-import com.javachallenge.basico.client.MovieClient;
-import com.javachallenge.basico.client.resources.MovieListResource;
+import com.javachallenge.basico.client.imdb.IMDBMovieClient;
+import com.javachallenge.basico.client.imdb.resources.ImdbMovieDTO;
+import com.javachallenge.basico.client.imdb.resources.ImdbMovieList;
 import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.repository.MovieRepository;
@@ -33,13 +34,14 @@ class MovieServiceTest {
     @Mock
     private MovieRepository repository;
     @Mock
-    private MovieClient movieClient;
+    private IMDBMovieClient movieClient;
 
     private Movie testMovie;
 
     private void createMovie() {
         testMovie = new Movie();
-        testMovie.setId("3");
+        testMovie.setId(3L);
+        testMovie.setImdbId("3");
         testMovie.setTitle("The Godfather");
         testMovie.setFullTitle("The Godfather (1972)");
     }
@@ -60,39 +62,34 @@ class MovieServiceTest {
     }
 
     @Test
-    void shouldReturnMovieWhenSearchingForImdbId() {
-        createMovie();
-        when(movieClient.findByImdbId(anyString(), anyString())).thenReturn(testMovie);
-
-        Movie movieResponse = service.findByImdbId("3");
-        Assertions.assertThat(movieResponse).isEqualTo(testMovie);
-    }
-
-    @Test
-    void shouldReturnMovieWhenImdbIdDoesntExist() {
-        when(movieClient.findByImdbId(anyString(), anyString())).thenReturn(null);
-
-        Movie movieResponse = service.findByImdbId("3");
-        Assertions.assertThat(movieResponse).isNull();
-    }
-
-    @Test
     void shouldAddMovieWhenAddingToTopMovies() {
-        createMovie();
-        List<Movie> movieListToReturn = new ArrayList<Movie>();
-        MovieListResource resource = new MovieListResource(movieListToReturn);
+        ImdbMovieDTO mockMovie = getImdbMovieDTO();
+        setImdbMovieListFromAPICall(mockMovie);
 
-        movieListToReturn.add(testMovie);
-        movieListToReturn.add(testMovie);
-        movieListToReturn.add(testMovie);
+        when(repository.findAllImdbIdExistingByImdbId(anyList())).thenReturn(new ArrayList<>());
+        service.populateImdbMovies();
+
+        verify(repository, times(2)).save(any());
+    }
+
+    private void setImdbMovieListFromAPICall(ImdbMovieDTO testMovie) {
+        List<ImdbMovieDTO> movieListToReturn = new ArrayList<ImdbMovieDTO>();
+        ImdbMovieList mockListReturnedFromAPICall = new ImdbMovieList(movieListToReturn);
+
+        ImdbMovieDTO secondTestMovie = new ImdbMovieDTO();
+        secondTestMovie.setId("1");
+
+        movieListToReturn.add(secondTestMovie);
         movieListToReturn.add(testMovie);
 
-        when(movieClient.findAll(anyString())).thenReturn(resource);
-        when(repository.findMovieById(anyString())).thenReturn(null);
-        when(movieClient.findByImdbId(anyString(), eq("3"))).thenReturn(testMovie);
+        when(movieClient.findAll(anyString())).thenReturn(mockListReturnedFromAPICall);
+    }
 
-        service.saveTopMovies();
-        verify(repository, times(4)).save(any());
+    private ImdbMovieDTO getImdbMovieDTO() {
+        ImdbMovieDTO movieFromAPICall = new ImdbMovieDTO();
+        movieFromAPICall.setId("3");
+        when(movieClient.findByImdbId(anyString(), anyString())).thenReturn(movieFromAPICall);
+        return movieFromAPICall;
     }
 
     @Test
@@ -106,17 +103,17 @@ class MovieServiceTest {
         movieListToReturn.add(testMovie);
 
         Page<Movie> pages = new PageImpl<>(movieListToReturn);
-        when(repository.findByOrderByFavoritedDesc(Pageable.ofSize(4))).thenReturn(pages);
-        Page<Movie> moviesList = service.findTopByFavorited(4);
+        when(repository.findByOrderByFavoritedDesc(Pageable.ofSize(10))).thenReturn(pages);
+        Page<Movie> moviesList = service.findTopFavorited();
         Assertions.assertThat(moviesList).isNotEmpty();
         Assertions.assertThat(moviesList.getSize()).isEqualTo(4);
     }
 
     @Test
     void shouldReturnNullWhenBestMatchIsEmpty() {
-        when(userService.findMoviesByUsername(anyString())).thenReturn(new HashSet<>());
+        when(userService.findMoviesByUserId(anyLong())).thenReturn(new HashSet<>());
 
-        Movie movie = service.findRandomMovie(new UserDetailsImpl(1L, "testuser", "testpassword", null));
+        Movie movie = service.findRandomMovie2(new UserDetailsImpl(1L, "testuser", "testpassword", null));
         Assertions.assertThat(movie).isNull();
     }
 
@@ -127,7 +124,7 @@ class MovieServiceTest {
 
         // Creating common movie to add to both users favorites
         Movie commonMovie = new Movie();
-        commonMovie.setId("1");
+        commonMovie.setImdbId("1");
 
         // Creating movie list and adding commonMovie to favorites list for requested user
         Set<Movie> movieListToReturn = new HashSet<Movie>();
@@ -154,11 +151,11 @@ class MovieServiceTest {
         // Setting response for the method called when
         when(userService.findById(anyLong())).thenReturn(user);
         // Setting response for the favorited movies list of the requested user
-        when(userService.findMoviesByUsername(anyString())).thenReturn(movieListToReturn);
+        when(userService.findMoviesByUserId(anyLong())).thenReturn(movieListToReturn);
         // Setting repository response for movie calls
-        when(repository.findMovieById(anyString())).thenReturn(commonMovie);
+        when(repository.findMovieByImdbId(anyString())).thenReturn(commonMovie);
 
-        Movie movie = service.findRandomMovie(new UserDetailsImpl(1L, "testuser", "testpassword", null));
+        Movie movie = service.findRandomMovie2(new UserDetailsImpl(1L, "testuser", "testpassword", null));
         Assertions.assertThat(movie).isNotNull();
         Assertions.assertThat(movie).isEqualTo(testMovie);
     }

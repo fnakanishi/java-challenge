@@ -33,12 +33,12 @@ public class UserService {
     }
 
     public Set<Movie> findMoviesByUser(UserDetailsImpl userImpl) {
-        String username = userImpl.getUsername();
-        return findMoviesByUsername(username);
+        Long userId = userImpl.getId();
+        return findMoviesByUserId(userId);
     }
 
-    public Set<Movie> findMoviesByUsername(String username) {
-        User user = findByUsername(username);
+    public Set<Movie> findMoviesByUserId(Long userId) {
+        User user = findById(userId);
         return user.getFavorites();
     }
 

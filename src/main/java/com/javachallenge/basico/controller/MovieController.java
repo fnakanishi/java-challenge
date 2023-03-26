@@ -23,8 +23,8 @@ public class MovieController {
 
     @GetMapping("/populate")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity findTop250() {
-        movieService.saveTopMovies();
+    public ResponseEntity populateMovies() {
+        movieService.populateImdbMovies();
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -34,9 +34,9 @@ public class MovieController {
         return ResponseEntity.ok().body(movies);
     }
 
-    @GetMapping("/list-top/{amount}")
-    public ResponseEntity findTop10(@PathVariable int amount) {
-        Page<Movie> movies = movieService.findTopByFavorited(amount);
+    @GetMapping("/list-top-10/")
+    public ResponseEntity findTop10() {
+        Page<Movie> movies = movieService.findTopFavorited();
         return ResponseEntity.ok().body(movies);
     }
 
@@ -47,13 +47,13 @@ public class MovieController {
     }
 
     @PutMapping("/add-favorite/{id}")
-    public ResponseEntity addFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable String id) {
+    public ResponseEntity addFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable Long id) {
         movieService.addFavorite(user, id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/remove-favorite/{id}")
-    public ResponseEntity removeFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable String id) {
+    public ResponseEntity removeFavorite(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable Long id) {
         movieService.removeFavorite(user, id);
         return ResponseEntity.noContent().build();
     }

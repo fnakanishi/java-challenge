@@ -1,6 +1,5 @@
-package com.javachallenge.basico.client.resources;
+package com.javachallenge.basico.client.imdb.resources;
 
-import com.javachallenge.basico.entity.Movie;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +11,6 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class MovieListResource {
-    private List<Movie> items;
+public class ImdbMovieList {
+    private List<ImdbMovieDTO> items;
 }

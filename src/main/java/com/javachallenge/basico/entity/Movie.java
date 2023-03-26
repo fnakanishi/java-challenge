@@ -1,6 +1,8 @@
 package com.javachallenge.basico.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.javachallenge.basico.client.imdb.resources.ImdbMovieDTO;
+import com.javachallenge.basico.client.tmdb.resources.TmdbMovieDTO;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -8,35 +10,65 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Table(name = "TB_MOVIE")
+@Table(name = "TB_MOVIE", uniqueConstraints = @UniqueConstraint(columnNames = "IMDB_ID"))
 @JsonIgnoreProperties("usersFavorited")
 public class Movie implements Serializable {
-    private String id;
+    private Long id;
+    private String imdbId;
     private String title;
     private String originalTitle;
     private String fullTitle;
-    private int year;
     private String image;
     private Date releaseDate;
     private String runtime;
     private String plot;
-    private String awards;
-    private String directors;
-    private String writers;
-    private String stars;
     private String genres;
-    private String languages;
-    private String contentRating;
     private int favorited;
     private Set<User> usersFavorited;
 
+    public Movie() {
+    }
+
+    public Movie(ImdbMovieDTO dto) {
+        this.imdbId = dto.getId();
+        this.title = dto.getTitle();
+        this.originalTitle = dto.getOriginalTitle();
+        this.fullTitle = dto.getFullTitle();
+        this.image = dto.getImage();
+        this.releaseDate = dto.getReleaseDate();
+        this.runtime = dto.getRuntime();
+        this.plot = dto.getPlot();
+        this.genres = dto.getGenres();
+    }
+
+    public Movie(TmdbMovieDTO dto) {
+        this.imdbId = dto.getImdbId();
+        this.title = dto.getTitle();
+        this.originalTitle = dto.getOriginalTitle();
+        this.image = ("https://image.tmdb.org/t/p/original" + dto.getImage());
+        this.releaseDate = dto.getReleaseDate();
+        this.runtime = dto.getRuntime();
+        this.plot = this.getPlot();
+        this.genres = ""; // stream the shit out of it;
+    }
+
     @Id
-    public String getId() {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    @Column(name = "IMDB_ID", nullable = false)
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     @Column(nullable = false)
@@ -64,15 +96,6 @@ public class Movie implements Serializable {
 
     public void setFullTitle(String fullTitle) {
         this.fullTitle = fullTitle;
-    }
-
-    @Column(name = "LAUNCH_YEAR", nullable = false)
-    public int getYear() {
-        return year;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
     }
 
     @Column(name = "IMAGE_URL")
@@ -112,66 +135,12 @@ public class Movie implements Serializable {
     }
 
     @Column()
-    public String getAwards() {
-        return awards;
-    }
-
-    public void setAwards(String awards) {
-        this.awards = awards;
-    }
-
-    @Column()
-    public String getDirectors() {
-        return directors;
-    }
-
-    public void setDirectors(String directors) {
-        this.directors = directors;
-    }
-
-    @Column()
-    public String getWriters() {
-        return writers;
-    }
-
-    public void setWriters(String writers) {
-        this.writers = writers;
-    }
-
-    @Column()
-    public String getStars() {
-        return stars;
-    }
-
-    public void setStars(String stars) {
-        this.stars = stars;
-    }
-
-    @Column()
     public String getGenres() {
         return genres;
     }
 
     public void setGenres(String genres) {
         this.genres = genres;
-    }
-
-    @Column()
-    public String getLanguages() {
-        return languages;
-    }
-
-    public void setLanguages(String languages) {
-        this.languages = languages;
-    }
-
-    @Column(name = "CONTENT_RATING")
-    public String getContentRating() {
-        return contentRating;
-    }
-
-    public void setContentRating(String contentRating) {
-        this.contentRating = contentRating;
     }
 
     @Column(nullable = false)
