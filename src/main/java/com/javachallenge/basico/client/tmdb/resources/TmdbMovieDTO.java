@@ -1,26 +1,39 @@
-package com.javachallenge.basico.client.imdb.resources;
+package com.javachallenge.basico.client.tmdb.resources;
+
+
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class ImdbMovieDTO {
-    private String id;
+public class TmdbMovieDTO {
+    private Long id;
+    @SerializedName("imdb_id")
+    private String imdbId;
     private String title;
+    @SerializedName("original_title")
     private String originalTitle;
-    private String fullTitle;
+    @SerializedName("poster_path")
     private String image;
+    @SerializedName("release_date")
     private Date releaseDate;
     private String runtime;
+    @SerializedName("overview")
     private String plot;
-    private String genres;
 
-    private String errorMessage;
-
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public void setImdbId(String imdbId) {
+        this.imdbId = imdbId;
     }
 
     public String getTitle() {
@@ -37,14 +50,6 @@ public class ImdbMovieDTO {
 
     public void setOriginalTitle(String originalTitle) {
         this.originalTitle = originalTitle;
-    }
-
-    public String getFullTitle() {
-        return fullTitle;
-    }
-
-    public void setFullTitle(String fullTitle) {
-        this.fullTitle = fullTitle;
     }
 
     public String getImage() {
@@ -77,21 +82,5 @@ public class ImdbMovieDTO {
 
     public void setPlot(String plot) {
         this.plot = plot;
-    }
-
-    public String getGenres() {
-        return genres;
-    }
-
-    public void setGenres(String genres) {
-        this.genres = genres;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
     }
 }

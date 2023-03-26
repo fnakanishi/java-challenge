@@ -49,7 +49,6 @@ public class Movie implements Serializable {
         this.releaseDate = dto.getReleaseDate();
         this.runtime = dto.getRuntime();
         this.plot = this.getPlot();
-        this.genres = ""; // stream the shit out of it;
     }
 
     @Id

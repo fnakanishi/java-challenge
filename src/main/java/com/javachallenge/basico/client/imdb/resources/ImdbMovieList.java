@@ -13,4 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ImdbMovieList {
     private List<ImdbMovieDTO> items;
+    private String errorMessage;
+
+    public ImdbMovieList(List<ImdbMovieDTO> movieList) {
+        items = movieList;
+    }
 }

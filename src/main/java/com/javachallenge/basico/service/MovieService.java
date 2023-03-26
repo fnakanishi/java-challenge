@@ -4,10 +4,14 @@ import com.hazelcast.core.HazelcastInstance;
 import com.javachallenge.basico.client.imdb.IMDBMovieClient;
 import com.javachallenge.basico.client.imdb.resources.ImdbMovieDTO;
 import com.javachallenge.basico.client.imdb.resources.ImdbMovieList;
+import com.javachallenge.basico.client.tmdb.TMDBMovieClient;
+import com.javachallenge.basico.client.tmdb.resources.TmdbMovieDTO;
+import com.javachallenge.basico.client.tmdb.resources.TmdbMovieList;
 import com.javachallenge.basico.entity.Movie;
 import com.javachallenge.basico.entity.User;
 import com.javachallenge.basico.repository.MovieRepository;
 import com.javachallenge.basico.security.service.UserDetailsImpl;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,7 +24,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.javachallenge.basico.Constants.IMDB_API_KEY;
-import static com.javachallenge.basico.client.imdb.IMDBMovieClient.buildMovieClient;
+import static com.javachallenge.basico.Constants.TMDB_API_KEY;
 
 @Service
 public class MovieService {
@@ -35,23 +39,54 @@ public class MovieService {
         return hazelcastInstance.getMap("movies");
     }
 
-    private IMDBMovieClient movieClient = buildMovieClient();
+    private IMDBMovieClient imdbMovieClient = IMDBMovieClient.buildMovieClient();
+    private TMDBMovieClient tmdbMovieClient= TMDBMovieClient.buildMovieClient();;
 
+    @CircuitBreaker(name = "createMovie", fallbackMethod = "createWithImdbFallback")
     private void createWithImdb(String imdbId) {
-        ImdbMovieDTO dto = movieClient.findByImdbId(IMDB_API_KEY, imdbId);
+        ImdbMovieDTO dto = imdbMovieClient.findByImdbId(IMDB_API_KEY, imdbId);
+        String errorMessage = dto.getErrorMessage();
+        if (!errorMessage.isEmpty()) {
+            throw new RuntimeException(errorMessage);
+        }
         repository.save(new Movie(dto));
+    }
+
+    private void createWithImdbFallback(String imdbId, RuntimeException e) {
+        TmdbMovieDTO dto = tmdbMovieClient.findByImdbId(TMDB_API_KEY, imdbId);
+        dto.setImdbId(imdbId);
+        repository.save(new Movie(dto));
+    }
+
+    private void createWithTmdb(TmdbMovieDTO tmdbMovie) {
+        Long tmdbId = tmdbMovie.getId();
+        TmdbMovieDTO dto = tmdbMovieClient.findByTmdbId(TMDB_API_KEY, tmdbId);
+        Movie movie = repository.findMovieByImdbId(dto.getImdbId());
+        if (movie == null) {
+            repository.save(new Movie(dto));
+        }
     }
 
     public List<Movie> findAll() {
         return repository.findAll();
     }
 
+    @CircuitBreaker(name = "populate", fallbackMethod = "populateTmdbMovies")
     public void populateImdbMovies() {
-        ImdbMovieList response = movieClient.findAll(IMDB_API_KEY);
+        ImdbMovieList response = imdbMovieClient.findAll(IMDB_API_KEY);
+        String errorMessage = response.getErrorMessage();
+        if (!errorMessage.isEmpty()) {
+            throw new RuntimeException(errorMessage);
+        }
         List<String> imdbIdsFromExternalAPI = new ArrayList<>(response.getItems().stream().map(ImdbMovieDTO::getId).toList());
         List<String> imdbIdsFromDB = repository.findAllImdbIdExistingByImdbId(imdbIdsFromExternalAPI);
         imdbIdsFromExternalAPI.remove(imdbIdsFromDB);
         imdbIdsFromExternalAPI.stream().parallel().forEach(this::createWithImdb);
+    }
+
+    private void populateTmdbMovies(RuntimeException e) {
+        TmdbMovieList response = tmdbMovieClient.findAll(TMDB_API_KEY);
+        response.getResults().stream().parallel().forEach(this::createWithTmdb);
     }
 
     @RateLimiter(name = "topMovies", fallbackMethod = "findTopFavoritedFromCache")
