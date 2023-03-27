@@ -79,8 +79,8 @@ This is a simple project with a challenge for Backend developrs.
 
 #### Include Hazelcast, design pattern, Resilience4J
 
-- [ ] Include this rank top movies in the cache (Hazelcast), and get from it using RateLimiter (https://resilience4j.readme.io/docs/ratelimiter) as fallback.
-- [ ] Find other API to get Movies, and update the first endpoint to use template method design pattern to be able to get the movies from bove APIs. Use a CircuitBreak for that. If you have any problem with one API you should get from the other API as a fallback. (You can try that changing the API Key)
+- [X] Include this rank top movies in the cache (Hazelcast), and get from it using RateLimiter (https://resilience4j.readme.io/docs/ratelimiter) as fallback.
+- [X] Find other API to get Movies, and update the first endpoint to use template method design pattern to be able to get the movies from bove APIs. Use a CircuitBreak for that. If you have any problem with one API you should get from the other API as a fallback. (You can try that changing the API Key)
 - [X] Create a new endpoint to send a random movie to the user.
 This endpoint should do this: find another user who likes the same movies as the current user and upload a random movie from that favorites list.
 If this condition does not exist, just send a random movie.
