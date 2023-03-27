@@ -203,4 +203,117 @@ class MovieServiceTest {
         Assertions.assertThat(movie).isNotNull();
         Assertions.assertThat(movie).isEqualTo(testMovie);
     }
+
+    @Test
+    @DisplayName("Should return a movie from favorites list of another user with common favorited movie.")
+    void shouldReturnAMovieWhenBestMatchIsNotEmpty2() {
+        BestMatchTestBuilder builder = new BestMatchTestBuilder();
+        BestMatchTest bestMatchTest = builder.getResult();
+        Movie movie = service.findRandomMovie2(bestMatchTest.getRequestUser());
+        Assertions.assertThat(movie).isNotNull();
+        Assertions.assertThat(movie).isEqualTo(bestMatchTest.getRecommendedMovie());
+    }
+
+    private class BestMatchTest {
+        private UserDetailsImpl requestUser;
+        private User similarInterestUser;
+        private Movie recommendedMovie;
+        private Movie commonMovie;
+
+        public void setRequestUser(UserDetailsImpl requestUser) {
+            this.requestUser = requestUser;
+        }
+
+        public void setSimilarInterestUser(User similarInterestUser) {
+            this.similarInterestUser = similarInterestUser;
+        }
+
+        public void setRecommendedMovie(Movie recommendedMovie) {
+            this.recommendedMovie = recommendedMovie;
+        }
+
+        public void setCommonMovie(Movie commonMovie) {
+            this.commonMovie = commonMovie;
+        }
+
+        public UserDetailsImpl getRequestUser() {
+            return requestUser;
+        }
+
+        public User getSimilarInterestUser() {
+            return similarInterestUser;
+        }
+
+        public Movie getRecommendedMovie() {
+            return recommendedMovie;
+        }
+
+        public Movie getCommonMovie() {
+            return commonMovie;
+        }
+    }
+
+    private class BestMatchTestBuilder {
+        private BestMatchTest test;
+
+        private BestMatchTestBuilder() {
+            test = new BestMatchTest();
+            build();
+        }
+
+        private void buildCommonMovie() {
+            Movie commonMovie = new Movie();
+            commonMovie.setImdbId("1");
+            test.setCommonMovie(commonMovie);
+        }
+
+        private void buildSimilarInterestUser() {
+            User similarInterestUser = new User("testuser", "testpassword");
+            similarInterestUser.setId(1L);
+            Set<Movie> movieListToFavorite = Set.of(test.getCommonMovie(), test.getRecommendedMovie());
+            similarInterestUser.setFavorites(movieListToFavorite);
+            when(userService.findById(anyLong())).thenReturn(similarInterestUser);
+            test.setSimilarInterestUser(similarInterestUser);
+        }
+
+        private void buildRequestUser() {
+            UserDetailsImpl requestUser = new UserDetailsImpl(1L, "testuser", "testpassword", null);
+            test.setRequestUser(requestUser);
+        }
+
+        private void buildRecommendedMovie() {
+            Movie recommendedMovie = new Movie();
+            recommendedMovie.setImdbId("3");
+            recommendedMovie.setTitle("The Godfather");
+            recommendedMovie.setFullTitle("The Godfather (1972)");
+            test.setRecommendedMovie(recommendedMovie);
+        }
+
+        private void buildUserFavoriteMoviesList() {
+            Set<User> userListToFavorite = Set.of(test.getSimilarInterestUser());
+
+            test.getRecommendedMovie().setUsersFavorited(userListToFavorite);
+            test.getCommonMovie().setUsersFavorited(userListToFavorite);
+        }
+
+        private void buildCurrentUserContainingFavoriteMovie() {
+            Set<Movie> movieListToReturn = Set.of(test.getCommonMovie());
+            when(userService.findMoviesByUserId(anyLong())).thenReturn(movieListToReturn);
+            when(repository.findMovieByImdbId(anyString())).thenReturn(test.getCommonMovie());
+        }
+
+        private void build() {
+            buildRequestUser();
+            buildCommonMovie();
+            buildRecommendedMovie();
+            buildSimilarInterestUser();
+            buildUserFavoriteMoviesList();
+            buildCurrentUserContainingFavoriteMovie();
+        }
+
+        public BestMatchTest getResult() {
+            build();
+            return test;
+        }
+    }
 }
