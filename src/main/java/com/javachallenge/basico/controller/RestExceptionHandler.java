@@ -23,6 +23,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ NullPointerException.class, NoSuchElementException.class })
     public ResponseEntity<Object> handleNullPointerException(
             Exception e, WebRequest request) {
-        return new ResponseEntity<Object>("Resource not found.", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<Object>("Resource not found.", new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 }

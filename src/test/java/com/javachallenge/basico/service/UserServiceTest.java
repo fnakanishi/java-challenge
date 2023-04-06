@@ -107,7 +107,7 @@ class UserServiceTest {
         Set<Movie> movies = new HashSet<>();
         movies.add(new Movie());
         userToReturnFromRepository.setFavorites(movies);
-        when(repository.findByUsername(anyString())).thenReturn(userToReturnFromRepository);
+        when(repository.getReferenceById(anyLong())).thenReturn(userToReturnFromRepository);
 
         Set<Movie> moviesList = service.findMoviesByUser(userImpl);
         Assertions.assertThat(moviesList).isNotNull();

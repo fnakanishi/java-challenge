@@ -46,7 +46,7 @@ public class MovieService {
     private void createWithImdb(String imdbId) {
         ImdbMovieDTO dto = imdbMovieClient.findByImdbId(IMDB_API_KEY, imdbId);
         String errorMessage = dto.getErrorMessage();
-        if (!errorMessage.isEmpty()) {
+        if (errorMessage != null && !errorMessage.isEmpty()) {
             throw new RuntimeException(errorMessage);
         }
         repository.save(new Movie(dto));
@@ -75,7 +75,7 @@ public class MovieService {
     public void populateImdbMovies() {
         ImdbMovieList response = imdbMovieClient.findAll(IMDB_API_KEY);
         String errorMessage = response.getErrorMessage();
-        if (!errorMessage.isEmpty()) {
+        if (errorMessage != null && !errorMessage.isEmpty()) {
             throw new RuntimeException(errorMessage);
         }
         List<String> imdbIdsFromExternalAPI = new ArrayList<>(response.getItems().stream().map(ImdbMovieDTO::getId).toList());
