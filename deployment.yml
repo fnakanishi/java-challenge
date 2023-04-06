@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: java-challenge
+spec:
+  selector:
+    matchLabels:
+      app: java-challenge
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: java-challenge
+    spec:
+      containers:
+        - name: java-challenge
+          image: java-challenge:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3

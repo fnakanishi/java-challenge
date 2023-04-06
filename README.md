@@ -100,10 +100,10 @@ If this condition does not exist, just send a random movie.
 
 #### Docker, Kubernetes, Deploy in the cloud
 
-- [ ] Run your application using Docker, create a docker file.
-- [ ] Include Spring Actuator.
-- [ ] Create the files to deploy the application using kubernetes (2 replicas).
-- [ ] Include the probes from actuator in your deployment.yml
+- [X] Run your application using Docker, create a docker file.
+- [X] Include Spring Actuator.
+- [X] Create the files to deploy the application using kubernetes (2 replicas).
+- [X] Include the probes from actuator in your deployment.yml
 - [ ] Update your probes in case of hazelcast go down the application should restart
 - [ ] Do the deployment into sandbox Openshift (https://developers.redhat.com/developer-sandbox)
 
