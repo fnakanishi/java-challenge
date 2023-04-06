@@ -207,8 +207,14 @@ class MovieServiceTest {
     @Test
     @DisplayName("Should return a movie from favorites list of another user with common favorited movie.")
     void shouldReturnAMovieWhenBestMatchIsNotEmpty2() {
-        BestMatchTestBuilder builder = new BestMatchTestBuilder();
-        BestMatchTest bestMatchTest = builder.getResult();
+        BestMatchTest bestMatchTest = new BestMatchTestBuilder()
+                .buildRequestUser()
+                .buildCommonMovie()
+                .buildRecommendedMovie()
+                .buildSimilarInterestUser()
+                .buildUserFavoriteMoviesList()
+                .buildCurrentUserContainingFavoriteMovie()
+                .build();
         Movie movie = service.findRandomMovie2(bestMatchTest.getRequestUser());
         Assertions.assertThat(movie).isNotNull();
         Assertions.assertThat(movie).isEqualTo(bestMatchTest.getRecommendedMovie());
@@ -258,61 +264,56 @@ class MovieServiceTest {
 
         private BestMatchTestBuilder() {
             test = new BestMatchTest();
-            build();
         }
 
-        private void buildCommonMovie() {
+        private BestMatchTestBuilder buildCommonMovie() {
             Movie commonMovie = new Movie();
             commonMovie.setImdbId("1");
             test.setCommonMovie(commonMovie);
+            return this;
         }
 
-        private void buildSimilarInterestUser() {
+        private BestMatchTestBuilder buildSimilarInterestUser() {
             User similarInterestUser = new User("testuser", "testpassword");
             similarInterestUser.setId(1L);
             Set<Movie> movieListToFavorite = Set.of(test.getCommonMovie(), test.getRecommendedMovie());
             similarInterestUser.setFavorites(movieListToFavorite);
             when(userService.findById(anyLong())).thenReturn(similarInterestUser);
             test.setSimilarInterestUser(similarInterestUser);
+            return this;
         }
 
-        private void buildRequestUser() {
+        private BestMatchTestBuilder buildRequestUser() {
             UserDetailsImpl requestUser = new UserDetailsImpl(1L, "testuser", "testpassword", null);
             test.setRequestUser(requestUser);
+            return this;
         }
 
-        private void buildRecommendedMovie() {
+        private BestMatchTestBuilder buildRecommendedMovie() {
             Movie recommendedMovie = new Movie();
             recommendedMovie.setImdbId("3");
             recommendedMovie.setTitle("The Godfather");
             recommendedMovie.setFullTitle("The Godfather (1972)");
             test.setRecommendedMovie(recommendedMovie);
+            return this;
         }
 
-        private void buildUserFavoriteMoviesList() {
+        private BestMatchTestBuilder buildUserFavoriteMoviesList() {
             Set<User> userListToFavorite = Set.of(test.getSimilarInterestUser());
 
             test.getRecommendedMovie().setUsersFavorited(userListToFavorite);
             test.getCommonMovie().setUsersFavorited(userListToFavorite);
+            return this;
         }
 
-        private void buildCurrentUserContainingFavoriteMovie() {
+        private BestMatchTestBuilder buildCurrentUserContainingFavoriteMovie() {
             Set<Movie> movieListToReturn = Set.of(test.getCommonMovie());
             when(userService.findMoviesByUserId(anyLong())).thenReturn(movieListToReturn);
             when(repository.findMovieByImdbId(anyString())).thenReturn(test.getCommonMovie());
+            return this;
         }
 
-        private void build() {
-            buildRequestUser();
-            buildCommonMovie();
-            buildRecommendedMovie();
-            buildSimilarInterestUser();
-            buildUserFavoriteMoviesList();
-            buildCurrentUserContainingFavoriteMovie();
-        }
-
-        public BestMatchTest getResult() {
-            build();
+        private BestMatchTest build() {
             return test;
         }
     }
